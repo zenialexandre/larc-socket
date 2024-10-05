@@ -1,10 +1,11 @@
 package client.tcp;
 
+import java.net.Socket;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class TcpClient implements Runnable {
+public class TcpClient {
 
     /*
     * The TcpClient is responsible for:
@@ -14,14 +15,26 @@ public class TcpClient implements Runnable {
     * */
 
     private static final Integer PORT = 1012;
-    private final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
 
-    public void keepAlive() {
-        scheduledExecutorService.scheduleAtFixedRate(this, 0, 6, TimeUnit.SECONDS);
-    }
+    public static class KeepAliveTask implements Runnable {
 
-    @Override
-    public void run() {
+        private static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+
+        public void start() {
+            scheduledExecutorService.scheduleAtFixedRate(this, 0, 6, TimeUnit.SECONDS);
+        }
+
+        @Override
+        public void run() {
+            try {
+                System.out.println("Keepalive task initializing...");
+                //final Socket socket = new Socket("localhost:8080", PORT);
+
+                System.out.println("Keepalive task ended.");
+            } catch (final Exception exception) {
+                throw new RuntimeException("");
+            }
+        }
 
     }
 
