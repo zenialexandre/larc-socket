@@ -2,6 +2,8 @@ import cli.CommandLineInterfaceHelper;
 import client.tcp.TcpClient;
 import client.udp.UdpClient;
 
+import java.util.Scanner;
+
 public class Application {
 
     public static void main(final String[] args) {
@@ -10,9 +12,16 @@ public class Application {
         final TcpClient.KeepAliveTask keepAliveTask = new TcpClient.KeepAliveTask(tcpClient);
         final UdpClient udpClient = new UdpClient();
 
-        commandLineInterfaceHelper.startApplication();
-        commandLineInterfaceHelper.requestLogin(tcpClient);
-        keepAliveTask.start();
+        try (final Scanner scanner = new Scanner(System.in)) {
+            commandLineInterfaceHelper.startApplication();
+            commandLineInterfaceHelper.requestLogin(scanner, tcpClient);
+            keepAliveTask.start();
+            commandLineInterfaceHelper.runMenu(scanner, tcpClient, udpClient);
+        } catch (final Exception exception) {
+            throw new RuntimeException(
+                    "Unknown exception while scanning inputs from the user. Error: " + exception.getMessage()
+            );
+        }
     }
 
 }

@@ -3,6 +3,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Objects;
 
 public class MockServerApplication {
 
@@ -25,6 +26,8 @@ public class MockServerApplication {
             System.out.println("Password received: " + password);
 
             printWriter.println("Logged in.");
+
+            while (Objects.nonNull(serverSocket));
         } catch (final Exception exception) {
             throw new RuntimeException(
                     "Unknown exception while trying to initialize TCP Server. Error: " + exception.getMessage()

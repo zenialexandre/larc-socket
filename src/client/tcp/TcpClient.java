@@ -1,5 +1,6 @@
 package client.tcp;
 
+import cli.CommandLineInterfaceHelper;
 import commons.Servers;
 
 import java.io.BufferedReader;
@@ -21,6 +22,7 @@ public class TcpClient {
     * */
 
     private static final Integer PORT = 1012;
+    protected Socket socket;
     protected String username;
     protected String password;
 
@@ -34,32 +36,81 @@ public class TcpClient {
         }
 
         public void start() {
-            scheduledExecutorService.scheduleAtFixedRate(this, 2, 6, TimeUnit.SECONDS);
+            scheduledExecutorService.scheduleAtFixedRate(this, 0, 6, TimeUnit.SECONDS);
         }
 
         @Override
         public void run() {
             try {
                 if (Objects.nonNull(tcpClient.getUsername()) && Objects.nonNull(tcpClient.getPassword())) {
-                    System.out.println("Keepalive task initializing...");
+                    //System.out.println("Keepalive task initializing...");
                     String serverResponse = "";
-                    final Socket socket = new Socket(Servers.LARC_SERVER, PORT);
-                    final PrintWriter printWriter = new PrintWriter(socket.getOutputStream(), true);
-                    final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    tcpClient.socket = new Socket(Servers.LOCAL_SERVER, PORT);
+                    final PrintWriter printWriter = new PrintWriter(tcpClient.socket.getOutputStream(), true);
+                    final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(tcpClient.socket.getInputStream()));
 
                     printWriter.println(tcpClient.getUsername());
                     printWriter.println(tcpClient.getPassword());
 
-                    while (Objects.nonNull(serverResponse = bufferedReader.readLine()))
-                        System.out.println("Server Response: " + serverResponse);
+                    //while (Objects.nonNull(serverResponse = bufferedReader.readLine()))
+                    //    System.out.println("Server Response: " + serverResponse);
 
-                    System.out.println("Keepalive task ended.");
+                    //System.out.println("Keepalive task ended.");
+                    //System.out.println(CommandLineInterfaceHelper.SECTION_SEPARATOR);
                 }
             } catch (final Exception exception) {
                 throw new RuntimeException("Keepalive task ended with an exception. Error: " + exception.getMessage());
             }
         }
 
+    }
+
+    public void getUsers() {
+        try {
+            if (Objects.nonNull(getSocket())) {
+                System.out.println(CommandLineInterfaceHelper.SECTION_SEPARATOR);
+                System.out.println("Starting to get the users from the server.");
+                final PrintWriter printWriter = new PrintWriter(getSocket().getOutputStream(), true);
+                final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
+
+                printWriter.println(String.format("GET USERS %s:%s", getUsername(), getPassword()));
+
+                while (Objects.nonNull(bufferedReader.readLine()))
+                    System.out.println("Users: " + bufferedReader.readLine());
+
+                System.out.println("Get users ended.");
+            }
+        } catch (final Exception exception) {
+            throw new RuntimeException(
+                    "Unknown exception while trying to get the users from the server. Error: " + exception.getMessage()
+            );
+        }
+    }
+
+    public void getMessage() {
+        try {
+            if (Objects.nonNull(getSocket())) {
+                System.out.println(CommandLineInterfaceHelper.SECTION_SEPARATOR);
+                System.out.println("Starting to get the message from the server.");
+                final PrintWriter printWriter = new PrintWriter(getSocket().getOutputStream(), true);
+                final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
+
+                printWriter.println(String.format("GET MESSAGE %s:%s", getUsername(), getPassword()));
+
+                while (Objects.nonNull(bufferedReader.readLine()))
+                    System.out.println("Message: " + bufferedReader.readLine());
+
+                System.out.println("Get message ended.");
+            }
+        } catch (final Exception exception) {
+            throw new RuntimeException(
+                    "Unknown exception while trying to get the message from the server. Error: " + exception.getMessage()
+            );
+        }
+    }
+
+    public Socket getSocket() {
+        return socket;
     }
 
     public void setUsername(final String username) {
