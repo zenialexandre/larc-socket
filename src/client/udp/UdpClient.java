@@ -9,13 +9,19 @@ import java.nio.charset.StandardCharsets;
 
 public class UdpClient {
 
+    /*
+     * The UdpClient is responsible for:
+     * Being able to send a message to a specific user on the server;
+     * */
+
     private static final Integer PORT = 1011;
+    private static final String SEND_MESSAGE_REQUEST = "SEND MESSAGE %s:%s:%s:%s";
 
     public void sendMessage(final String username, final String password, final String addressee, final String message) {
         try (final DatagramSocket datagramSocket = new DatagramSocket()) {
-            final String request = String.format("SEND MESSAGE %s:%s:%s:%s", username, password, addressee, message);
+            final String request = String.format(SEND_MESSAGE_REQUEST, username, password, addressee, message);
             final byte[] requestByteBuffer = request.getBytes(StandardCharsets.UTF_8);
-            final InetAddress inetAddress = InetAddress.getByName(Servers.LARC_SERVER);
+            final InetAddress inetAddress = InetAddress.getByName(Servers.LOCAL_SERVER);
             final DatagramPacket datagramPacket = new DatagramPacket(requestByteBuffer, requestByteBuffer.length, inetAddress, PORT);
 
             datagramSocket.send(datagramPacket);

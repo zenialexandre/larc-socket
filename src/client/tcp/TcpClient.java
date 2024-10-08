@@ -17,11 +17,13 @@ public class TcpClient {
     /*
     * The TcpClient is responsible for:
     * Running a scheduled task of 'keepalive' at each 6 seconds;
-    * Be able to list the server users;
+    * Being able to list the server users;
     * Request the oldest message from the server;
     * */
 
     private static final Integer PORT = 1012;
+    private static final String GET_USERS_REQUEST = "GET USERS %s:%s";
+    private static final String GET_MESSAGE_REQUEST = "GET MESSAGE %s:%s";
     protected Socket socket;
     protected String username;
     protected String password;
@@ -43,20 +45,13 @@ public class TcpClient {
         public void run() {
             try {
                 if (Objects.nonNull(tcpClient.getUsername()) && Objects.nonNull(tcpClient.getPassword())) {
-                    //System.out.println("Keepalive task initializing...");
-                    String serverResponse = "";
-                    tcpClient.socket = new Socket(Servers.LOCAL_SERVER, PORT);
-                    final PrintWriter printWriter = new PrintWriter(tcpClient.socket.getOutputStream(), true);
-                    final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(tcpClient.socket.getInputStream()));
+                    if (Objects.isNull(tcpClient.getSocket()) || tcpClient.getSocket().isClosed())
+                        tcpClient.socket = new Socket(Servers.LOCAL_SERVER, PORT);
 
-                    printWriter.println(tcpClient.getUsername());
-                    printWriter.println(tcpClient.getPassword());
-
-                    //while (Objects.nonNull(serverResponse = bufferedReader.readLine()))
-                    //    System.out.println("Server Response: " + serverResponse);
-
-                    //System.out.println("Keepalive task ended.");
-                    //System.out.println(CommandLineInterfaceHelper.SECTION_SEPARATOR);
+                    final PrintWriter printWriter = new PrintWriter(tcpClient.getSocket().getOutputStream(), true);
+                    final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(tcpClient.getSocket().getInputStream()));
+                    printWriter.println(String.format(GET_USERS_REQUEST, tcpClient.getUsername(), tcpClient.getPassword()));
+                    bufferedReader.readLine();
                 }
             } catch (final Exception exception) {
                 throw new RuntimeException("Keepalive task ended with an exception. Error: " + exception.getMessage());
@@ -67,18 +62,20 @@ public class TcpClient {
 
     public void getUsers() {
         try {
-            if (Objects.nonNull(getSocket())) {
+            if (Objects.nonNull(getSocket()) && !getSocket().isClosed()) {
                 System.out.println(CommandLineInterfaceHelper.SECTION_SEPARATOR);
                 System.out.println("Starting to get the users from the server.");
                 final PrintWriter printWriter = new PrintWriter(getSocket().getOutputStream(), true);
                 final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
 
-                printWriter.println(String.format("GET USERS %s:%s", getUsername(), getPassword()));
+                printWriter.println(String.format(GET_USERS_REQUEST, getUsername(), getPassword()));
+                final String serverResponse = bufferedReader.readLine();
 
-                while (Objects.nonNull(bufferedReader.readLine()))
-                    System.out.println("Users: " + bufferedReader.readLine());
-
+                System.out.println("Users: " + serverResponse);
                 System.out.println("Get users ended.");
+            } else {
+                System.out.println(CommandLineInterfaceHelper.SECTION_SEPARATOR);
+                System.out.println("Socket unavailable in the moment.");
             }
         } catch (final Exception exception) {
             throw new RuntimeException(
@@ -89,18 +86,20 @@ public class TcpClient {
 
     public void getMessage() {
         try {
-            if (Objects.nonNull(getSocket())) {
+            if (Objects.nonNull(getSocket()) && !getSocket().isClosed()) {
                 System.out.println(CommandLineInterfaceHelper.SECTION_SEPARATOR);
                 System.out.println("Starting to get the message from the server.");
                 final PrintWriter printWriter = new PrintWriter(getSocket().getOutputStream(), true);
                 final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
 
-                printWriter.println(String.format("GET MESSAGE %s:%s", getUsername(), getPassword()));
+                printWriter.println(String.format(GET_MESSAGE_REQUEST, getUsername(), getPassword()));
+                final String serverResponse = bufferedReader.readLine();
 
-                while (Objects.nonNull(bufferedReader.readLine()))
-                    System.out.println("Message: " + bufferedReader.readLine());
-
+                System.out.println("Message: " + serverResponse);
                 System.out.println("Get message ended.");
+            } else {
+                System.out.println(CommandLineInterfaceHelper.SECTION_SEPARATOR);
+                System.out.println("Socket unavailable in the moment.");
             }
         } catch (final Exception exception) {
             throw new RuntimeException(

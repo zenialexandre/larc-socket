@@ -29,10 +29,10 @@ public class CommandLineInterfaceHelper {
         tcpClient.setPassword(scanner.nextLine());
 
         System.out.println("Login stored successfully.");
-        System.out.println(SECTION_SEPARATOR);
     }
 
     public void runMenu(final Scanner scanner, final TcpClient tcpClient, final UdpClient udpClient) {
+        System.out.println(SECTION_SEPARATOR);
         System.out.println("Welcome to the LARC SOCKET. Choose one of the options shown in the menu...");
         System.out.println("0 - Get Users from Larc Server. (TCP)");
         System.out.println("1 - Get Message from Larc Server. (TCP)");
@@ -50,8 +50,12 @@ public class CommandLineInterfaceHelper {
                 throw new RuntimeException("The input must be 0, 1, 2 or 3.");
 
             switch (userOptionParsed) {
-                case 0: { tcpClient.getUsers(); }
-                case 1: { tcpClient.getMessage(); }
+                case 0:
+                    tcpClient.getUsers();
+                    break;
+                case 1:
+                    tcpClient.getMessage();
+                    break;
                 case 2: {
                     System.out.print("> The ID of the addressee: ");
                     final String addressee = scanner.nextLine();
@@ -65,8 +69,11 @@ public class CommandLineInterfaceHelper {
                             addressee,
                             message
                     );
+                    break;
                 }
-                case 3: { System.exit(0); }
+                case 3:
+                    System.exit(0);
+                    break;
             }
         } catch (final NumberFormatException numberFormatException) {
             throw new RuntimeException("The input must be a number! Error: " + numberFormatException.getMessage());
