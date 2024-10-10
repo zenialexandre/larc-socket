@@ -51,7 +51,7 @@ public class TcpClient {
             try {
                 if (Objects.nonNull(tcpClient.getUsername()) && Objects.nonNull(tcpClient.getPassword())) {
                     if (Objects.isNull(tcpClient.getSocket()) || tcpClient.getSocket().isClosed())
-                        tcpClient.socket = new Socket(Servers.LOCAL_SERVER, PORT);
+                        tcpClient.socket = new Socket(Servers.LARC_SERVER, PORT);
 
                     final PrintWriter printWriter = new PrintWriter(tcpClient.getSocket().getOutputStream(), true);
                     final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(tcpClient.getSocket().getInputStream()));
@@ -109,7 +109,7 @@ public class TcpClient {
         try {
             if (Objects.nonNull(getSocket()) && !getSocket().isClosed()) {
                 System.out.println(CommandLineInterfaceHelper.SECTION_SEPARATOR);
-                System.out.println("Starting to get the card from the server.");
+                System.out.println("Starting to get from the server.");
                 final PrintWriter printWriter = new PrintWriter(getSocket().getOutputStream(), true);
                 final BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(getSocket().getInputStream()));
 

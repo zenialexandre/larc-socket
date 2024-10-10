@@ -45,7 +45,7 @@ public class UdpClient {
         try {
             final String request = String.format(requestType, Arrays.stream(requestParameters).toArray());
             final byte[] requestByteBuffer = request.getBytes(StandardCharsets.UTF_8);
-            final InetAddress inetAddress = InetAddress.getByName(Servers.LOCAL_SERVER);
+            final InetAddress inetAddress = InetAddress.getByName(Servers.LARC_SERVER);
             final DatagramPacket datagramPacket = new DatagramPacket(requestByteBuffer, requestByteBuffer.length, inetAddress, PORT);
 
             datagramSocket.send(datagramPacket);

@@ -111,7 +111,7 @@ public class CommandLineInterfaceHelper {
                         System.out.print("> Select the game flow option (ENTER, STOP, QUIT): ");
                         final GameFlowEnum gameFlowEnum = GameFlowEnum.valueOf(scanner.nextLine());
 
-                        udpClient.sendGame(tcpClient.getUsername(), tcpClient.getUsername(), gameFlowEnum);
+                        udpClient.sendGame(tcpClient.getUsername(), tcpClient.getPassword(), gameFlowEnum);
                         break;
                     }
                 }
